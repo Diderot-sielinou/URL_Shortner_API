@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "NODE_ENV=test  --test --experimental-test-coverage",
+    "test": "NODE_ENV=test node --test --experimental-test-coverage",
     "start": "node  ./bin/www",
     "dev": "nodemon  ./bin/www"
   },
@@ -20,6 +20,7 @@
     "luxon": "^3.6.1",
     "morgan": "~1.9.1",
     "pg": "^8.15.6",
+    "supertest": "^7.1.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {

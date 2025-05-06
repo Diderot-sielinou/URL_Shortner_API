@@ -17,7 +17,7 @@ try {
     shortCode = randomString(length);
   return shortCode;
 } catch (error) {
-  throw new Error("Unable to generate a unique short ",error.message);
+  throw new Error("Unable to generate a unique short ");
 }
  
 }
