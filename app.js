@@ -9,7 +9,7 @@ import createError from 'http-errors'
 import winstonLogger from "./utils/logger.js"
 
 import indexRouter from'./routes/index.js';
-import usersRouter  from'./routes/users.js';
+import authUserRouter  from'./routes/auth-user.js';
 
 
 const app = express();
@@ -25,6 +25,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/auth/', authUserRouter);
+
+
+
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function (err, req, res, next) {
+  // render the error message and status
+  res.status(err.status || 500).json({
+    status: err.status,
+    message: err.message ,
+  });
+});
 
 export default app;

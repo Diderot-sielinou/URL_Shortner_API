@@ -34,7 +34,7 @@ const pool = new Pool({
 logger.info(`Database is configured for: ${DB_NAME}`);
 
 pool.on("connect", (client) => {
-  logger.info(`Client connected from Pool (Total count: ${pool.totalCount}`);
+  logger.info(`Client connected from Pool (Total count: ${pool.totalCount})`);
 });
 
 pool.on("error", (err, client) => {
@@ -101,27 +101,32 @@ const initialzeDbSchema = async () => {
       END;
       $$ LANGUAGE plpgsql;
     `);
-
+    await client.query(`DROP TRIGGER IF EXISTS set_updated_at_users ON users;`);
     await client.query(`
       CREATE TRIGGER set_updated_at_users
       BEFORE UPDATE ON users
       FOR EACH ROW
       EXECUTE FUNCTION update_updated_at_column();
     `);
-
+    await client.query(
+      `DROP TRIGGER IF EXISTS set_updated_at_short_links ON short_links;`
+    );
     await client.query(`
       CREATE TRIGGER set_updated_at_short_links
       BEFORE UPDATE ON short_links
       FOR EACH ROW
       EXECUTE FUNCTION update_updated_at_column();
     `);
-
+    await client.query(
+      `DROP TRIGGER IF EXISTS set_updated_at_click_logs ON click_logs;`
+    );
     await client.query(`
       CREATE TRIGGER set_updated_at_click_logs
       BEFORE UPDATE ON click_logs
       FOR EACH ROW
       EXECUTE FUNCTION update_updated_at_column();
     `);
+
     logger.info(
       `add a PostgreSQL trigger that automatically updates the updated_at field`
     );
@@ -131,16 +136,25 @@ const initialzeDbSchema = async () => {
     );
 
     //create short_links index
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_short_links_user_id ON short_links(user_id);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_short_links_expires_at ON short_links(expires_at);`);
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_short_links_user_id ON short_links(user_id);`
+    );
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_short_links_expires_at ON short_links(expires_at);`
+    );
 
     //create click_logs index
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_click_logs_short_code ON click_logs(short_code);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_click_logs_timestamp ON click_logs(timestamp);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_click_logs_ip ON click_logs(ip);`);
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_click_logs_short_code ON click_logs(short_code);`
+    );
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_click_logs_timestamp ON click_logs(timestamp);`
+    );
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS idx_click_logs_ip ON click_logs(ip);`
+    );
 
-    logger.info(`successfully created index`)
-    
+    logger.info(`successfully created index`);
   } catch (error) {
     logger.error(`Error while initializing the schema`, error);
     process.exit(1);
