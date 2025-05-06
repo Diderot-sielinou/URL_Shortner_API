@@ -6,14 +6,19 @@ import logger from'morgan';
 import createError from 'http-errors'
 
 
+import winstonLogger from "./utils/logger.js"
+
 import indexRouter from'./routes/index.js';
 import usersRouter  from'./routes/users.js';
+
 
 const app = express();
 const __filename  = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-app.use(logger('dev'));
+const morganFormat = process.env.NODE_ENV === "production" ? "combined" : 'dev'
+app.use(logger(morganFormat, { stream: winstonLogger.stream }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

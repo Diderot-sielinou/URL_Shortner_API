@@ -6,7 +6,7 @@
 
 import app from'../app.js';
 // import { connectToDb, initialzeDbSchema } from '../config/db.js';
-// import logger from '../utils/logger.js';
+import logger from '../utils/logger.js';
 
 import deb from'debug'
 import http from 'http';
@@ -56,17 +56,17 @@ let shuttingDown = false;
  
  const shutdown = (signal, value) => {
    if (shuttingDown) {
-    //  logger.info(`Already shutting down. Received ${signal} again`);
+     logger.info(`Already shutting down. Received ${signal} again`);
      return;
    }
    shuttingDown = true
-  //  logger.info(`Received ${signal}. Shutting down gracefully`)
+   logger.info(`Received ${signal}. Shutting down gracefully`)
    server.close((err) => {
      if (err) {
-      //  logger.error("Error closing server", err)
+       logger.error("Error closing server", err)
        process.exit(1)
      } else {
-      //  logger.info('server closed. Exiting the process.')
+       logger.info('server closed. Exiting the process.')
        process.exit(0)
      }
    })
@@ -95,11 +95,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      // logger.error(bind + ' requires elevated privileges');
+      logger.error(bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      // logger.error(bind + ' is already in use');
+      logger.error(bind + ' is already in use');
       process.exit(1);
       break;
     default:
@@ -120,15 +120,15 @@ function onListening() {
 }
 const startServer = async () => {
   try {
-    // logger.info(`Attempting to Start server on port ${port}`)
+    logger.info(`Attempting to Start server on port ${port}`)
     // await connectToDb()
     // await initialzeDbSchema()
-    // logger.info(`Starting server on port ${port}`)
+    logger.info(`Starting server on port ${port}`)
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
   } catch (error) {
-    // logger.error('Failed during server startup process: ', error)
+    logger.error('Failed during server startup process: ', error)
     process.exit(1)
   }
 }
