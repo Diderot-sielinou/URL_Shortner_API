@@ -17,6 +17,7 @@
     "http-errors": "^2.0.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.6.1",
     "morgan": "~1.9.1",
     "pg": "^8.15.6",
     "winston": "^3.17.0"

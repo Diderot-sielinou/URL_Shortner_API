@@ -10,6 +10,7 @@ import winstonLogger from "./utils/logger.js"
 
 import indexRouter from'./routes/index.js';
 import authUserRouter  from'./routes/auth-user.js';
+import shortUrlRouter from './routes/short-url.js'
 
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/auth/', authUserRouter);
+app.use('/api/',shortUrlRouter)
 
 
 
