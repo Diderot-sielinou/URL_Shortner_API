@@ -69,7 +69,6 @@ const initialzeDbSchema = async () => {
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         short_code VARCHAR(10) UNIQUE NOT NULL,
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-
         original_url TEXT NOT NULL,
         expires_at TIMESTAMPTZ,
         click_count INTEGER DEFAULT 0,
