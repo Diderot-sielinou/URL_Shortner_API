@@ -91,7 +91,11 @@ const initialzeDbSchema = async () => {
       );
     `);
     logger.info(`click_logs table has been created`);
-
+    await client.query(`
+      ALTER TABLE short_links
+      ADD COLUMN IF NOT EXISTS short_link TEXT;
+    `);
+    logger.info(`Added 'short_link' column to short_links table (if not exists)`);
     await client.query(`
       CREATE OR REPLACE FUNCTION update_updated_at_column()
       RETURNS TRIGGER AS $$

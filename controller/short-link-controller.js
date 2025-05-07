@@ -37,9 +37,11 @@ export async function createShortUrlHandle(req, res, next) {
       });
     }
 
+    const shortLink = `http://${process.env.HOSTNAME}:${process.env.PORT}/${shortCode}`
+
     const insertShortLinkQuery = `
-                              INSERT INTO short_links (short_code, original_url, expires_at, user_id)
-                              VALUES ($1, $2, $3, $4)
+                              INSERT INTO short_links (short_code, original_url, expires_at, user_id,short_link)
+                              VALUES ($1, $2, $3, $4,$5)
                               RETURNING *;
                                               `;
 
@@ -48,6 +50,7 @@ export async function createShortUrlHandle(req, res, next) {
       originalUrl,
       expiresAt,
       userId,
+      shortLink
     ]);
     if (insertResult.rows.length > 0) {
       logger.info(`Short URL created successfully for userId:${userId}`);
@@ -55,11 +58,10 @@ export async function createShortUrlHandle(req, res, next) {
     return res.status(201).json({
       message: "Short URL created successfully",
       shortUrl: `http://${process.env.HOSTNAME}:${process.env.PORT}/${shortCode}`,
-      short_link: insertResult.rows[0],
     });
   } catch (error) {
     logger.error("Error while creating short URL:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error:error.message || "Internal server error" });
   }
 }
 
@@ -117,3 +119,30 @@ export async function redirectionShortCodeHandle(req, res, next) {
       .json({ message: "Server error during redirection" });
   }
 }
+
+export async function getAllShortUrlByUser(req, res, next) {
+  const userId = req.user.id;
+  try {
+    const allShortUrlQuery = `
+      SELECT short_code, original_url, short_link, expires_at, click_count, created_at
+      FROM short_links
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+    `;
+    const results = await query(allShortUrlQuery, [userId]);
+    logger.info(`Fetched all short URLs created by user: ${userId}`);
+    return res.status(200).json({
+      message: "Successfully retrieved short URLs",
+      results: results.rows,
+      count:results.rowCount
+    });
+
+  } catch (error) {
+    logger.error(`Error fetching short URLs for user ${userId}:`, error);
+    return res.status(500).json({
+      message: "Server error while fetching short URLs",
+    });
+  }
+}
+
+
