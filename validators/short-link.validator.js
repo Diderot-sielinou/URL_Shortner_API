@@ -41,14 +41,23 @@ export function createShortLinkValidator(req, res, next) {
   next();
 }
 
-const IdSchema = Joi.object({
-  id: Joi.string().uuid().required(),
+const shortCodeSchema = Joi.object({
+  shortCode: Joi.string()
+  .alphanum() // Letters and numbers only
+  .min(4) // Minimum length (adjust as needed)
+  .max(10) // Maximum length (adjust as needed)
+  .messages({
+    "string.base": "Shortcode must be a string",
+    "string.alphanum": "Shortcode can only contain letters and numbers",
+    "string.min": "Shortcode must be at 4 least  characters long",
+    "string.max": "Shortcode must be at 10 most  characters long",
+  }),
 });
 
-export const readIdValidator = (req, res, next) => {
-  const { error } = IdSchema.validate(req.params);
+export const readShortCodeValidator = (req, res, next) => {
+  const { error } = shortCodeSchema.validate(req.params.shortCode);
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    return res.status(400).json({ message: "error.details[0].message" });
   }
   next();
 };

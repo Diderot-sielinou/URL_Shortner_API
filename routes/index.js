@@ -1,5 +1,6 @@
 import express from 'express';
 import { redirectionShortCodeHandle } from '../controller/short-link-controller.js';
+import { readShortCodeValidator } from '../validators/short-link.validator.js';
 const router = express.Router();
 
 /* GET home page. */
