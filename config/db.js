@@ -17,7 +17,15 @@ const {
 
 if (!DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
   logger.error(
-    "Database environment variables are missing! Check your .env file."
+    `Database environment variables are missing! Missing: ${[
+      !DB_HOST && "DB_HOST",
+      !DB_PASSWORD && "DB_PASSWORD",
+      !DB_NAME && "DB_NAME",
+      !DB_USER && "DB_USER",
+      !DB_PORT && "DB_PORT",
+    ]
+      .filter(Boolean)
+      .join(", ")}`
   );
   process.exit(1);
 }
@@ -95,7 +103,11 @@ const initialzeDbSchema = async () => {
       ALTER TABLE short_links
       ADD COLUMN IF NOT EXISTS short_link TEXT;
     `);
-    logger.info(`Added 'short_link' column to short_links table (if not exists)`);
+    logger.info(
+      `Added 'short_link' column to short_links table (if not exists)`
+    );
+
+    //create the pg_trigger fuction
     await client.query(`
       CREATE OR REPLACE FUNCTION update_updated_at_column()
       RETURNS TRIGGER AS $$
@@ -105,35 +117,51 @@ const initialzeDbSchema = async () => {
       END;
       $$ LANGUAGE plpgsql;
     `);
-    await client.query(`DROP TRIGGER IF EXISTS set_updated_at_users ON users;`);
+    logger.debug("update_updated_at_column function ensured.");
+
     await client.query(`
-      CREATE TRIGGER set_updated_at_users
-      BEFORE UPDATE ON users
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
+      DO $$ BEGIN
+        IF NOT EXISTS ( SELECT 1 FROM pg_trigger
+          WHERE tgname = 'set_updated_at_users') THEN 
+          CREATE TRIGGER set_updated_at_users
+          BEFORE UPDATE ON users 
+          FOR EACH ROW 
+          EXECUTE FUNCTION update_updated_at_column();
+        END IF;
+      END $$;
     `);
-    await client.query(
-      `DROP TRIGGER IF EXISTS set_updated_at_short_links ON short_links;`
-    );
+    logger.debug("users update_at Trigger is checked and created");
+
     await client.query(`
-      CREATE TRIGGER set_updated_at_short_links
-      BEFORE UPDATE ON short_links
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
+      DO $$ BEGIN
+        IF NOT EXISTS ( SELECT 1 FROM pg_trigger
+          WHERE tgname = 'set_updated_at_short_links') THEN 
+          CREATE TRIGGER set_updated_at_short_links
+          BEFORE UPDATE ON short_links 
+          FOR EACH ROW 
+          EXECUTE FUNCTION update_updated_at_column();
+        END IF;
+      END $$;
     `);
-    await client.query(
-      `DROP TRIGGER IF EXISTS set_updated_at_click_logs ON click_logs;`
-    );
+    logger.debug("short_links update_at Trigger is checked and created");
+
     await client.query(`
-      CREATE TRIGGER set_updated_at_click_logs
-      BEFORE UPDATE ON click_logs
-      FOR EACH ROW
-      EXECUTE FUNCTION update_updated_at_column();
+      DO $$ BEGIN
+        IF NOT EXISTS ( SELECT 1 FROM pg_trigger
+          WHERE tgname = 'set_updated_at_click_logs') THEN 
+          CREATE TRIGGER set_updated_at_click_logs
+          BEFORE UPDATE ON click_logs 
+          FOR EACH ROW 
+          EXECUTE FUNCTION update_updated_at_column();
+        END IF;
+      END $$;
     `);
+    logger.debug("click_logs update_at Trigger is checked and created");
 
     logger.info(
       `add a PostgreSQL trigger that automatically updates the updated_at field`
     );
+
     //creer user index
     await client.query(
       `CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);`

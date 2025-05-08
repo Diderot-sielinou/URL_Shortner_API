@@ -22,7 +22,7 @@ export async function createShortUrlHandle(req, res, next) {
   if (jsDateExpiresAt < DateTime.now().setZone("Africa/Lagos")) {
     return res
       .status(400)
-      .json({ error: "Expiration date must be in the future" });
+      .json({ message: "Expiration date must be in the future" });
   }
   const expiresAt = jsDateExpiresAt.toJSDate();
   if (!shortCode) {
@@ -58,6 +58,7 @@ export async function createShortUrlHandle(req, res, next) {
     return res.status(201).json({
       message: "Short URL created successfully",
       shortUrl: `http://${process.env.HOSTNAME}:${process.env.PORT}/${shortCode}`,
+      shortCode: shortCode
     });
   } catch (error) {
     logger.error("Error while creating short URL:", error);
