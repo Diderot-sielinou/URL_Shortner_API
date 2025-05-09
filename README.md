@@ -113,7 +113,7 @@ DB_PASSWORD=
 DB_HOST=localhost
 DB_PORT=
 JWT_EXPIRES_IN=1h
-HOSTNAME=
+BASE_URL=
 
 ```
 4.Run the server:

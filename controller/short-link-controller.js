@@ -48,7 +48,7 @@ export async function createShortUrlHandle(req, res, next) {
       });
     }
 
-    const shortLink = `http://${process.env.HOSTNAME}:${process.env.PORT}/${shortCode}`;
+    const shortLink = `${process.env.BASE_URL}/${shortCode}`;
 
     const insertShortLinkQuery = `
                               INSERT INTO short_links (short_code, original_url, expires_at, user_id,short_link)
@@ -68,7 +68,7 @@ export async function createShortUrlHandle(req, res, next) {
     }
     return res.status(201).json({
       message: "Short URL created successfully",
-      shortUrl: `http://${process.env.HOSTNAME}:${process.env.PORT}/${shortCode}`,
+      shortUrl: `${process.env.BASE_URL}/${shortCode}`,
       shortCode: shortCode,
     });
   } catch (error) {
