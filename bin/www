@@ -124,8 +124,8 @@ const startServer = async () => {
     // await connectToDb()
     // await initialzeDbSchema()
     logger.info(`Starting server on port ${port}`)
-    // await connectToDb()
-   // await initialzeDbSchema()
+    await connectToDb()
+   await initialzeDbSchema()
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
