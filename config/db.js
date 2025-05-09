@@ -204,7 +204,9 @@ const initialzeDbSchema = async () => {
 };
 
 const connectToDb = async () => {
+  
   try {
+    logger.info("⏳ Connecting to PostgreSQL...");
     const client = await pool.connect();
     logger.info(`Database connection pool established successfully`);
     client.release();
