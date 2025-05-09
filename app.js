@@ -4,8 +4,10 @@ import { fileURLToPath } from 'node:url';
 import cookieParser from'cookie-parser';
 import logger from'morgan';
 import createError from 'http-errors'
+import swaggerUi from "swagger-ui-express"
 
 
+import swaggerSpec from './swaggerConfig.js';
 import winstonLogger from "./utils/logger.js"
 
 import indexRouter from'./routes/index.js';
@@ -29,6 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api/auth/', authUserRouter);
 app.use('/api/',shortUrlRouter)
+
+app.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 

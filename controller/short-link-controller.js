@@ -10,21 +10,32 @@ export async function createShortUrlHandle(req, res, next) {
   const userId = req.user.id;
   const formatWithTime = "dd/MM/yyyy HH:mm";
   const formatWithoutTime = "dd/MM/yyyy";
-  // convert to a js date in central africa time zone
-  let jsDateExpiresAt = DateTime.fromFormat(expiresAtString, formatWithTime, {
-    zone: "Africa/Lagos",
-  });
-  if (!jsDateExpiresAt.isValid) {
-    jsDateExpiresAt = DateTime.fromFormat(expiresAtString, formatWithoutTime, {
+  let expiresAt
+
+  if (expiresAtString) {
+    // convert to a js date in central africa time zone
+   let jsDateExpiresAt = DateTime.fromFormat(expiresAtString, formatWithTime, {
       zone: "Africa/Lagos",
     });
+    if (!jsDateExpiresAt.isValid) {
+      jsDateExpiresAt = DateTime.fromFormat(
+        expiresAtString,
+        formatWithoutTime,
+        {
+          zone: "Africa/Lagos",
+        }
+      );
+    }
+    if (jsDateExpiresAt < DateTime.now().setZone("Africa/Lagos")) {
+      return res
+        .status(400)
+        .json({ message: "Expiration date must be in the future" });
+    }
+     expiresAt = jsDateExpiresAt.toJSDate();
+  }else{
+    expiresAt=null
   }
-  if (jsDateExpiresAt < DateTime.now().setZone("Africa/Lagos")) {
-    return res
-      .status(400)
-      .json({ message: "Expiration date must be in the future" });
-  }
-  const expiresAt = jsDateExpiresAt.toJSDate();
+
   if (!shortCode) {
     shortCode = await generateUniqueShortCode();
   }
@@ -58,7 +69,7 @@ export async function createShortUrlHandle(req, res, next) {
     return res.status(201).json({
       message: "Short URL created successfully",
       shortUrl: `http://${process.env.HOSTNAME}:${process.env.PORT}/${shortCode}`,
-      shortCode: shortCode
+      shortCode: shortCode,
     });
   } catch (error) {
     logger.error("Error while creating short URL:", error);
@@ -214,6 +225,8 @@ export async function getShortUrlStats(req, res, next) {
     });
   } catch (error) {
     logger.error(`Error getting short link info for ${shortCode}:`, error);
-    return res.status(500).json({ message: "Server error while fetching short link details" });
+    return res
+      .status(500)
+      .json({ message: "Server error while fetching short link details" });
   }
 }
