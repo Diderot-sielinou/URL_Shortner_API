@@ -13,6 +13,7 @@ const {
   DB_PORT,
   NODE_ENV,
   DB_NAME_TEST,
+  DATABASE_URL,
 } = process.env;
 
 if (!DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
@@ -30,14 +31,21 @@ if (!DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
   process.exit(1);
 }
 
-const pool = new Pool({
-  user: DB_USER,
-  host: DB_HOST,
-  database: NODE_ENV === "test" ? DB_NAME_TEST : DB_NAME,
-  password: DB_PASSWORD,
-  port: parseInt(DB_PORT, 10),
-  connectionTimeoutMillis: 2000,
-});
+const isProduction = NODE_ENV === "production";
+
+const pool = isProduction
+  ? new Pool({
+      connectionString: DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, // nécessaire pour Railway.
+    })
+  : new Pool({
+      user: DB_USER,
+      host: DB_HOST,
+      database: NODE_ENV === "test" ? DB_NAME_TEST : DB_NAME,
+      password: DB_PASSWORD,
+      port: parseInt(DB_PORT, 10),
+      connectionTimeoutMillis: 2000,
+    });
 
 logger.info(`Database is configured for: ${DB_NAME}`);
 
