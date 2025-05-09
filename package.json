@@ -20,12 +20,12 @@
     "luxon": "^3.6.1",
     "morgan": "~1.9.1",
     "pg": "^8.15.6",
-    "supertest": "^7.1.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "supertest": "^7.1.0",
     "nodemon": "^3.1.10"
   }
 }
