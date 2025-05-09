@@ -16,7 +16,8 @@ const {
   DATABASE_URL,
 } = process.env;
 
-if (!DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
+const isProduction = NODE_ENV === "production";
+if (!isProduction && !DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
   logger.error(
     `Database environment variables are missing! Missing: ${[
       !DB_HOST && "DB_HOST",
@@ -31,7 +32,6 @@ if (!DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
   process.exit(1);
 }
 
-const isProduction = NODE_ENV === "production";
 
 const pool = isProduction
   ? new Pool({
