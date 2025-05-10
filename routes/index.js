@@ -59,5 +59,8 @@ const router = express.Router();
  */
 
 router.get('/:shortCode',redirectionShortCodeHandle);
+router.get("/", (req, res) => {
+return res.send({message: "Welcome to express"})
+})
 
 export default router;

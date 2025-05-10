@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "NODE_ENV=test node --test --experimental-test-coverage",
-    "start": "node  ./bin/www",
-    "dev": "nodemon  ./bin/www"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -25,7 +25,7 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "supertest": "^7.1.0",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.0"
   }
 }
