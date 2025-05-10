@@ -1,8 +1,8 @@
 import express from'express';
-import path,{dirname}  from'path';
+import path,{dirname}  from'node:path';
 import { fileURLToPath } from 'node:url';
 import cookieParser from'cookie-parser';
-import logger from'morgan';
+import logger from 'morgan';
 import createError from 'http-errors'
 import swaggerUi from "swagger-ui-express"
 
@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.set('trust proxy', true);
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/auth/', authUserRouter);
