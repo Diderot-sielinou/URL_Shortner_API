@@ -17,20 +17,21 @@ const {
 } = process.env;
 
 const isProduction = NODE_ENV === "production";
-if (!isProduction && !DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
-  logger.error(
-    `Database environment variables are missing! Missing: ${[
-      !DB_HOST && "DB_HOST",
-      !DB_PASSWORD && "DB_PASSWORD",
-      !DB_NAME && "DB_NAME",
-      !DB_USER && "DB_USER",
-      !DB_PORT && "DB_PORT",
-    ]
-      .filter(Boolean)
-      .join(", ")}`
-  );
-  process.exit(1);
-}
+// if (!isProduction && (!DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT)) {
+//   logger.error(
+//     `Database environment variables are missing! Missing: ${[
+//       !DB_HOST && "DB_HOST",
+//       !DB_PASSWORD && "DB_PASSWORD",
+//       !DB_NAME && "DB_NAME",
+//       !DB_USER && "DB_USER",
+//       !DB_PORT && "DB_PORT",
+//     ]
+//       .filter(Boolean)
+//       .join(", ")}`
+//   );
+//   process.exit(1);
+// }
+
 
 
 const pool = isProduction
