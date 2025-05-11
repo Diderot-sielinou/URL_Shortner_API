@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import createError from "http-errors";
 import swaggerUi from "swagger-ui-express";
+import cors from'cors';
 
 import swaggerSpec from "./swaggerConfig.js";
 import winstonLogger from "./utils/logger.js";
@@ -21,6 +22,8 @@ const __dirname = dirname(__filename);
 const morganFormat = process.env.NODE_ENV === "production" ? "combined" : "dev";
 app.use(logger(morganFormat, { stream: winstonLogger.stream }));
 
+
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
