@@ -1,6 +1,8 @@
 import { query } from "../config/db.js";
 import logger from "../utils/logger.js";
 import bcrypt from "bcryptjs";
+import createError from "http-errors";
+
 
 const HASH_SALT = 10;
 
@@ -13,7 +15,7 @@ export async function registerUserHandle(req, res, next) {
       logger.warn(
         `Registrationg attempt failed: Email already exists - ${email}`
       );
-      return res.status(409).json({ message: "Email already in use" });
+      return next(createError(409,"Email already in use"))
     }
     const passwordHash = await bcrypt.hash(password, HASH_SALT);
     logger.debug(`Password hashed for email: ${email}`);
@@ -41,6 +43,6 @@ export async function registerUserHandle(req, res, next) {
     });
   } catch (error) {
     logger.error(`Error during client registration for ${email}: `, error);
-    next(error);
+    next(createError(error.status,"Error during client registration"));
   }
 }

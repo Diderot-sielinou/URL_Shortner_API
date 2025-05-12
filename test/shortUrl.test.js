@@ -17,7 +17,7 @@ const randomCode = "Ta" + Math.random().toString(36).substring(2, 6);
 let short_code= null
 
 const data = {
-  expiresAtString: "08/05/2025",
+  expiresAtString: "08/05/2026",
   originalUrl:
     "https://portal.rebaseacademy.com/dashboard/projects/zelNDfnCtSNje5gCSlpY",
 };
@@ -66,7 +66,7 @@ describe("Short Link API (/api/)", () => {
         .set("Authorization", `Bearer ${authToken}`)
         .send({
           shortCode: randomCode,
-          expiresAtString: "15/05/2025",
+          expiresAtString: "15/05/2026",
           originalUrl:
             "https://verpex.com/blog/website-tips/free-public-apis-for-developers?ref=dailydev",
         })
@@ -138,7 +138,7 @@ describe("Short Link API (/api/)", () => {
         .post("/api/shorten")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
-          expiresAtString: "12/05/2025",
+          expiresAtString: "12/05/2026",
           originalUrl:
             "https://verpex.com/blog/website-tips/free-public-apis-for-developers?ref=dailydev",
         })
@@ -175,7 +175,7 @@ describe("Short Link API (/api/)", () => {
         .post("/api/shorten")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
-          expiresAtString: "12/05/2025",
+          expiresAtString: "12/05/2026",
           originalUrl:
             "https://www.freecodecamp.org/news/how-to-harden-your-nodejs-apis-security-best-practices/?ref=dailydev",
         })

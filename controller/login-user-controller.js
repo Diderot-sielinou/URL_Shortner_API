@@ -2,6 +2,7 @@ import { query } from "../config/db.js"
 import logger from "../utils/logger.js"
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import createError from "http-errors";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -13,8 +14,7 @@ export async function loginUserHandle(req,res,next) {
     const UserResult = await query(findUserQuery,[email])
     if(UserResult.rows.length === 0){
       logger.warn(`Login attempt failed: User not found - ${email}`)
-      return res.status(401).json({ message: 'Invalid Credentials' })
-
+      return next(createError(401,'Invalid Credentials'))
     }
     const User = UserResult.rows[0]
 
@@ -22,7 +22,7 @@ export async function loginUserHandle(req,res,next) {
 
     if(!isPassswordMatch){
       logger.warn(`Login attempt failed: Incorrect password - ${email}`)
-      return res.status(401).json({ message: "Invalid password" })
+      return next(createError(401,"Invalid password")) 
     }
 
     const payload = {
@@ -57,6 +57,7 @@ export async function loginUserHandle(req,res,next) {
 
   } catch (error) {
     logger.error(`Error during login process for ${email}: `, error)
-    res.status(500).json({ message: error.message || "Server error during login" })
+    return next(createError(500,error.message || "Server error during login" ))
+
   }
 }

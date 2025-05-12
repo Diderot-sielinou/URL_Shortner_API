@@ -1,4 +1,5 @@
 import Joi from "joi";
+import createError from "http-errors";
 
 const userRegisterValidator = Joi.object({
   firstName: Joi.string().min(3).max(30).required(),
@@ -18,7 +19,8 @@ const userRegisterValidator = Joi.object({
 export const registerUsertValidate = (req, res, next) => {
   const { error } = userRegisterValidator.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    return next(createError(400, error.details[0].message ))
+
   }
   next();
 };
@@ -31,7 +33,7 @@ const loginSchema = Joi.object({
 export const loginUserValidator = (req, res, next) => {
   const { error } = loginSchema.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    return next(createError(400, error.details[0].message ))
   }
   next();
 }

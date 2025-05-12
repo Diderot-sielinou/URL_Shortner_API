@@ -1,4 +1,5 @@
 import Joi from "joi";
+import createError from "http-errors";
 
 const linkSchema = Joi.object({
   shortCode: Joi.string()
@@ -36,7 +37,7 @@ const linkSchema = Joi.object({
 export function createShortLinkValidator(req, res, next) {
   const { error } = linkSchema.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    return next(createError(400,error.details[0].message))
   }
   next();
 }
@@ -57,7 +58,7 @@ const shortCodeSchema = Joi.object({
 export const readShortCodeValidator = (req, res, next) => {
   const { error } = shortCodeSchema.validate(req.params.shortCode);
   if (error) {
-    return res.status(400).json({ message: "error.details[0].message" });
+    next(createError(400,error.details[0].message ))
   }
   next();
 };

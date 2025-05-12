@@ -1,4 +1,6 @@
 import { DateTime } from "luxon";
+import createError from "http-errors";
+
 import { generateUniqueShortCode } from "../utils/generateUniqueShortCode.js";
 import { query } from "../config/db.js";
 import logger from "../utils/logger.js";
@@ -10,11 +12,11 @@ export async function createShortUrlHandle(req, res, next) {
   const userId = req.user.id;
   const formatWithTime = "dd/MM/yyyy HH:mm";
   const formatWithoutTime = "dd/MM/yyyy";
-  let expiresAt
+  let expiresAt;
 
   if (expiresAtString) {
     // convert to a js date in central africa time zone
-   let jsDateExpiresAt = DateTime.fromFormat(expiresAtString, formatWithTime, {
+    let jsDateExpiresAt = DateTime.fromFormat(expiresAtString, formatWithTime, {
       zone: "Africa/Lagos",
     });
     if (!jsDateExpiresAt.isValid) {
@@ -27,13 +29,11 @@ export async function createShortUrlHandle(req, res, next) {
       );
     }
     if (jsDateExpiresAt < DateTime.now().setZone("Africa/Lagos")) {
-      return res
-        .status(400)
-        .json({ message: "Expiration date must be in the future" });
+      return next(createError(400, "Expiration date must be in the future"));
     }
-     expiresAt = jsDateExpiresAt.toJSDate();
-  }else{
-    expiresAt=null
+    expiresAt = jsDateExpiresAt.toJSDate();
+  } else {
+    expiresAt = null;
   }
 
   if (!shortCode) {
@@ -43,9 +43,9 @@ export async function createShortUrlHandle(req, res, next) {
     const checkShortCodeQuery = `SELECT 1 FROM short_links WHERE short_code = $1`;
     const checkShortCodeResult = await query(checkShortCodeQuery, [shortCode]);
     if (checkShortCodeResult.rows.length > 0) {
-      return res.status(409).json({
-        message: "shortCode already exists, please change it",
-      });
+      return next(
+        createError(409, "shortCode already exists, please change it")
+      );
     }
 
     const shortLink = `${process.env.BASE_URL}/${shortCode}`;
@@ -62,7 +62,7 @@ export async function createShortUrlHandle(req, res, next) {
       expiresAt,
       userId,
       shortLink,
-      0
+      0,
     ]);
     if (insertResult.rows.length > 0) {
       logger.info(`Short URL created successfully for userId:${userId}`);
@@ -74,9 +74,9 @@ export async function createShortUrlHandle(req, res, next) {
     });
   } catch (error) {
     logger.error("Error while creating short URL:", error);
-    return res
-      .status(500)
-      .json({ error: error.message || "Internal server error" });
+    return next(
+      createError(error.status||500, error.message || "Internal server error")
+    );
   }
 }
 
@@ -91,7 +91,7 @@ export async function redirectionShortCodeHandle(req, res, next) {
 
     if (rows.length === 0) {
       logger.info(`Short link not found for shortcode: ${shortCode}`);
-      return res.status(404).json({ message: "Short link not found" });
+      return next(createError(404, "Short link not found"));
     }
 
     const { original_url, expires_at } = rows[0];
@@ -107,7 +107,7 @@ export async function redirectionShortCodeHandle(req, res, next) {
           .setZone("Africa/Lagos")
           .toISO()}`
       );
-      return res.status(410).json({ message: "Short link has expired" });
+      return next(createError(410, "Short link has expired"));
     }
 
     await query(
@@ -136,9 +136,7 @@ export async function redirectionShortCodeHandle(req, res, next) {
     return res.redirect(301, original_url);
   } catch (error) {
     logger.error(`Redirection error for shortcode ${shortCode}:`, error);
-    return res
-      .status(error.status || 500)
-      .json({ message: "Server error during redirection" });
+    return next(createError(error.status||500,error.message ||"Server error during redirection"  ))
   }
 }
 
@@ -160,9 +158,7 @@ export async function getAllShortUrlByUser(req, res, next) {
     });
   } catch (error) {
     logger.error(`Error fetching short URLs for user ${userId}:`, error);
-    return res.status(500).json({
-      message: "Server error while fetching short URLs",
-    });
+    return next(createError(error.status||500,error.message|| "Server error while fetching short URLs"))
   }
 }
 
@@ -191,9 +187,7 @@ export async function getShortUrlStats(req, res, next) {
     const { rows } = await query(joinQuery, [shortCode, userId]);
 
     if (rows.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Short link not found or access denied" });
+      return next(createError(404,"Short link not found or access denied"))
     }
     // Extraire les infos du lien et des clics
     const {
@@ -225,9 +219,8 @@ export async function getShortUrlStats(req, res, next) {
       clicks,
     });
   } catch (error) {
-    logger.error(`Error getting short link info for ${shortCode}:`, error);
-    return res
-      .status(500)
-      .json({ message: "Server error while fetching short link details" });
+    logger.error(`Error getting short link info for ${shortCode}: ${error.message}`);
+    return next(createError(error.status|| 500 ,error.message||"Server error while fetching short link details" ))
+
   }
 }

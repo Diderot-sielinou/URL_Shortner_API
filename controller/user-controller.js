@@ -1,6 +1,9 @@
 import { query } from "../config/db.js";
 import logger from "../utils/logger.js";
-export async function getInformationAboutUserHandle(req, res) {
+
+import createError from "http-errors";
+
+export async function getInformationAboutUserHandle(req, res,next) {
   const userId = req.user?.id;
 
   if (!userId) {
@@ -19,7 +22,7 @@ export async function getInformationAboutUserHandle(req, res) {
 
     if (getInfoResults.rows.length === 0) {
       logger.info(`User with ID ${userId} not found in database`);
-      return res.status(404).json({ message: "User not found" });
+      return next(createError(404,"User not found"))
     }
 
     logger.info(`Successfully retrieved information for user ID: ${userId}`);
@@ -30,8 +33,6 @@ export async function getInformationAboutUserHandle(req, res) {
     });
   } catch (error) {
     logger.error("Error while getting user information:", error);
-    return res
-      .status(500)
-      .json({ error: error.message || "Internal server error" });
+    return next(createError(error.status||500,error.message || "Internal server error"))
   }
 }
