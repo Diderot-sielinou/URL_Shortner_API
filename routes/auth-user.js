@@ -62,7 +62,7 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/LoginRequest'
+ *               $ref: '#/components/schemas/registerRequest'
  *       400:
  *         description: Validation error (e.g., invalid input).
  *         content:
@@ -84,7 +84,6 @@ const router = express.Router();
  */
 
 router.post('/register', registerUsertValidate,registerUserHandle);
-
 
 
 /**
