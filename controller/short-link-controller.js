@@ -51,8 +51,8 @@ export async function createShortUrlHandle(req, res, next) {
     const shortLink = `${process.env.BASE_URL}/${shortCode}`;
 
     const insertShortLinkQuery = `
-                              INSERT INTO short_links (short_code, original_url, expires_at, user_id,short_link)
-                              VALUES ($1, $2, $3, $4,$5)
+                              INSERT INTO short_links (short_code, original_url, expires_at, user_id,short_link,click_count)
+                              VALUES ($1, $2, $3, $4,$5,$6)
                               RETURNING *;
                                               `;
 
@@ -62,6 +62,7 @@ export async function createShortUrlHandle(req, res, next) {
       expiresAt,
       userId,
       shortLink,
+      0
     ]);
     if (insertResult.rows.length > 0) {
       logger.info(`Short URL created successfully for userId:${userId}`);
