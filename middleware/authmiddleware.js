@@ -11,7 +11,7 @@ const authMiddleware = (req, res, next) => {
     return res.status(401).json({ message: 'No token, authorication has been denied' })
   }
   try {
-    const decoded = jwt.decode(token, process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decoded.user
     logger.debug(`Auth middleware: Token verified for user ID ${req.user.id}`)
     next()
