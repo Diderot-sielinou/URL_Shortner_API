@@ -2,13 +2,14 @@ import express from "express";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import cookieParser from "cookie-parser";
-import logger from "morgan";
+import morgan from "morgan";
 import createError from "http-errors";
 import swaggerUi from "swagger-ui-express";
 import cors from'cors';
 
 import swaggerSpec from "./swaggerConfig.js";
 import winstonLogger from "./utils/logger.js";
+import logger from './utils/logger.js'
 
 import indexRouter from "./routes/index.js";
 import authUserRouter from "./routes/auth-user.js";
@@ -20,7 +21,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const morganFormat = process.env.NODE_ENV === "production" ? "combined" : "dev";
-app.use(logger(morganFormat, { stream: winstonLogger.stream }));
+app.use(morgan(morganFormat, { stream: winstonLogger.stream }));
 
 
 app.use(cors());
@@ -44,6 +45,7 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
+  logger.error(err.stack); // journalise dans fichier ou conso
   // render the error message and status
   res.status(err.status || 500).json({
     status: err.status,
