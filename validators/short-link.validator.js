@@ -56,7 +56,7 @@ const shortCodeSchema = Joi.object({
 });
 
 export const readShortCodeValidator = (req, res, next) => {
-  const { error } = shortCodeSchema.validate(req.params.shortCode);
+  const { error } = shortCodeSchema.validate(req.params);
   if (error) {
     next(createError(400,error.details[0].message ))
   }
