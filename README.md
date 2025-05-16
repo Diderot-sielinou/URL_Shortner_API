@@ -142,6 +142,10 @@ npm run dev
 
 [Visit](http://localhost:4000/api/api-docs)
 
+## a simple front end to consume the API
+
+[front end](https://short-link-front-production.up.railway.app)
+
 ## 📄 License
 
 This project is licensed under the [MIT](https://snyk.io/fr/articles/what-is-mit-license/) License — see the LICENSE file for details.
