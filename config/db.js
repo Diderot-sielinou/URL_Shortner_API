@@ -17,23 +17,22 @@ const {
 } = process.env;
 
 const isProduction = NODE_ENV === "production";
-if(!isProduction){
+if (!isProduction) {
   if (!DB_HOST || !DB_PASSWORD || !DB_NAME || !DB_USER || !DB_PORT) {
-  logger.error(
-    `Database environment variables are missing! Missing: ${[
-      !DB_HOST && "DB_HOST",
-      !DB_PASSWORD && "DB_PASSWORD",
-      !DB_NAME && "DB_NAME",
-      !DB_USER && "DB_USER",
-      !DB_PORT && "DB_PORT",
-    ]
-      .filter(Boolean)
-      .join(", ")}`
-  );
-  process.exit(1);
+    logger.error(
+      `Database environment variables are missing! Missing: ${[
+        !DB_HOST && "DB_HOST",
+        !DB_PASSWORD && "DB_PASSWORD",
+        !DB_NAME && "DB_NAME",
+        !DB_USER && "DB_USER",
+        !DB_PORT && "DB_PORT",
+      ]
+        .filter(Boolean)
+        .join(", ")}`
+    );
+    process.exit(1);
+  }
 }
-}
-
 
 const pool = isProduction
   ? new Pool({
@@ -115,6 +114,22 @@ const initialzeDbSchema = async () => {
     `);
     logger.info(
       `Added 'short_link' column to short_links table (if not exists)`
+    );
+
+    await client.query(`
+      ALTER TABLE users
+      ALTER COLUMN password DROP NOT NULL;
+    `);
+    logger.info(
+      `the not null constraint has been removed from the user's password`
+    );
+
+    await client.query(`
+      ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS auth_provider TEXT;
+    `);
+    logger.info(
+      `Added 'auth_provider' column to users table (if not exists)`
     );
 
     //create the pg_trigger fuction
@@ -206,7 +221,6 @@ const initialzeDbSchema = async () => {
 };
 
 const connectToDb = async () => {
-  
   try {
     logger.info("⏳ Connecting to PostgreSQL...");
     const client = await pool.connect();

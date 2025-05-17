@@ -30,8 +30,30 @@ export async function createUser({
   return newUserResult.rows[0];
 }
 
+export async function createGoogleUser({
+  firstName,
+  lastName,
+  email,
+  picture,
+}) {
+  const insertUsersql = `INSERT INTO users (first_name, last_name, email, profile_image_url,auth_provider) 
+  VALUES($1,$2,$3,$4,$5)
+  RETURNING *`;
+  const newUserResult = await query(insertUsersql, [
+    firstName,
+    lastName,
+    email,
+    picture,
+    "google"
+  ]);
+
+  return newUserResult.rows[0];
+}
+
+
+
 export async function getUserInfoByEmail(email) {
-  const findUserQuery = `SELECT id,first_name,last_name,email,password,adresse,phone,updated_at FROM users 
+  const findUserQuery = `SELECT id,first_name,last_name,email,password,adresse,phone,created_at,updated_at FROM users 
                          WHERE email=$1`;
   const UserResult = await query(findUserQuery, [email]);
   return UserResult.rows[0];

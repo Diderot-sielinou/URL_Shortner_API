@@ -1,6 +1,6 @@
 import express from'express';
 import { loginUserValidator, registerUsertValidate } from '../validators/auth-users-validators.js';
-import { registerUserHandle } from '../controller/user-controller.js';
+import { loginUserByGoogleHandle, redirectionToGoogleHandle, registerUserHandle } from '../controller/user-controller.js';
 import { loginUserHandle } from '../controller/user-controller.js';
 const router = express.Router();
 
@@ -130,6 +130,9 @@ router.post('/register', registerUsertValidate,registerUserHandle);
  *     security: [] # Override global security - this endpoint is public
  */
 router.post('/login', loginUserValidator,loginUserHandle);
+
+router.post('/google',redirectionToGoogleHandle)
+router.get('/callback',loginUserByGoogleHandle)
 
 
 export default router;
