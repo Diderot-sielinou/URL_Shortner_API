@@ -99,17 +99,18 @@ export async function loginUserByGoogleHandle(req, res, next) {
 
   if (!code) {
     logger.warn("Missing Google Redirect Code.");
-    return res.status(400).json({ message: "Missing Google authorization code." });
+    return res
+      .status(400)
+      .json({ message: "Missing Google authorization code." });
   }
 
   try {
-    const user = await loginUserByGoogle(code);
-
-    res.status(200).json({
-      message: "Sign in with Google successful !",
-      ...user,
-    });
+    const authToken = await loginUserByGoogle(code);
+    res.redirect(
+      `https://linked.up.railway.app/login-success?token=${authToken}`
+    );
   } catch (error) {
     logger.error("Error during Google login process:", error);
-    next(error);   }
+    next(error);
+  }
 }

@@ -207,16 +207,18 @@ export async function loginUserByGoogle(code) {
 
   logger.info(`User logged in successfully: ${user.email} (ID: ${user.id})`);
 
-  return {
-    token,
-    User: {
-      id: user.id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      email: user.email,
-      adresse: user.adresse,
-      phone: user.phone,
-      createdAt: user.created_at,
-    },
-  };
+  return token
+
+  // return {
+  //   token,
+  //   User: {
+  //     id: user.id,
+  //     firstName: user.first_name,
+  //     lastName: user.last_name,
+  //     email: user.email,
+  //     adresse: user.adresse,
+  //     phone: user.phone,
+  //     createdAt: user.created_at,
+  //   },
+  // };
 }

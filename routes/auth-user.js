@@ -131,7 +131,7 @@ router.post('/register', registerUsertValidate,registerUserHandle);
  */
 router.post('/login', loginUserValidator,loginUserHandle);
 
-router.post('/google',redirectionToGoogleHandle)
+router.get('/google',redirectionToGoogleHandle)
 router.get('/callback',loginUserByGoogleHandle)
 
 
