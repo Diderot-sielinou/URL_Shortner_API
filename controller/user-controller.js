@@ -86,8 +86,8 @@ export async function redirectionToGoogleHandle(req, res, next) {
     redirectUrl.searchParams.set("access_type", "offline");
     redirectUrl.searchParams.set("prompt", "select_account");
 
-    res.redirect(redirectUrl.toString());
     logger.info(`successfully redirect to google auth`);
+    res.redirect(redirectUrl.toString());
   } catch (error) {
     logger.info(`error occurred while redirecting to google oauth2`);
     next(error);
@@ -96,6 +96,7 @@ export async function redirectionToGoogleHandle(req, res, next) {
 
 export async function loginUserByGoogleHandle(req, res, next) {
   const code = req.query.code;
+  logger.info(`code google recus avec successfully ${code}`)
 
   if (!code) {
     logger.warn("Missing Google Redirect Code.");
@@ -104,10 +105,13 @@ export async function loginUserByGoogleHandle(req, res, next) {
       .json({ message: "Missing Google authorization code." });
   }
 
+  const BAESE_URL=process.env.NODE_ENV==="development"?"http://localhost:5173/":"https://short-link-front-production.up.railway.app/"
+
   try {
     const authToken = await loginUserByGoogle(code);
+    logger.info(`redirection vers le front avec le token ${authToken}`)
     res.redirect(
-      `https://short-link-front-production.up.railway.app/login-success?token=${authToken}`
+      `${BAESE_URL}welcome?token=${authToken}`
     );
   } catch (error) {
     logger.error("Error during Google login process:", error);

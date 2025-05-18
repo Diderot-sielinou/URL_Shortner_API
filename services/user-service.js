@@ -139,6 +139,8 @@ export async function loginUserByGoogle(code) {
   const tokenData = await tokenRes.json();
   const idToken = tokenData.id_token;
 
+  logger.info(`idtoken ${idToken}`)
+
   if (!idToken) throw new AppError("Échec de l'authentification", 401);
 
   //  verifi l'id_token avec la cle secret de google
@@ -155,6 +157,8 @@ export async function loginUserByGoogle(code) {
       email: email,
       picture: picture,
     });
+
+    logger.info(`new user creer ${name}`)
 
     const localPayload = {
       user: {
@@ -174,18 +178,20 @@ export async function loginUserByGoogle(code) {
 
     logger.info(`User logged in successfully: ${newUser.email} (ID: ${newUser.id})`);
 
-    return {
-      token,
-      User: {
-        id: newUser.id,
-        firstName: newUser.first_name,
-        lastName: newUser.last_name,
-        email: newUser.email,
-        adresse: newUser.adresse,
-        phone: newUser.phone,
-        createdAt: newUser.created_at,
-      },
-    };
+    return token
+
+    // return {
+    //   token,
+    //   User: {
+    //     id: newUser.id,
+    //     firstName: newUser.first_name,
+    //     lastName: newUser.last_name,
+    //     email: newUser.email,
+    //     adresse: newUser.adresse,
+    //     phone: newUser.phone,
+    //     createdAt: newUser.created_at,
+    //   },
+    // };
   }
 
   const localPayload = {
