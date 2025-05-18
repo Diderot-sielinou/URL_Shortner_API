@@ -107,7 +107,7 @@ export async function loginUserByGoogleHandle(req, res, next) {
   try {
     const authToken = await loginUserByGoogle(code);
     res.redirect(
-      `https://linked.up.railway.app/login-success?token=${authToken}`
+      `https://short-link-front-production.up.railway.app/login-success?token=${authToken}`
     );
   } catch (error) {
     logger.error("Error during Google login process:", error);
